@@ -30,10 +30,6 @@ module.exports = async (client) => {
 
         client.slashCommands.set(command.name, properties);
 
-        if (['MESSAGE', 'USER'].includes(command.type)) {
-            delete properties.description;
-        }
-
         slashCommands.push(properties);
 
     }
