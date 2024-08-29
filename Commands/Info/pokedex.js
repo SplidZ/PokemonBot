@@ -1,15 +1,15 @@
-const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder } = require("discord.js");
+const { ApplicationCommandType, ApplicationCommandOptionType } = require("discord.js");
 
 module.exports = {
     name: "pokedex",
     description: "Obtenez des informations sur un pokemon",
     dm_permission: false,
-    type: 1,
+    type: ApplicationCommandType.ChatInput,
     options: [
         {
             name: 'pokemon',
             description: 'Nom du pokémon à rechercher.',
-            type: 3,
+            type: ApplicationCommandOptionType.String,
             required: true,
         },
     ],
@@ -18,40 +18,18 @@ module.exports = {
 
         await interaction.deferReply()
 
-        const title = await interaction.options.getString("titre");
-        let year = await interaction.options.getInteger("année");
+        const pokemonName = await interaction.options.getString("pokemon");
+        const pokemonData = await client.functions.getPokemonFromPokedex(String(pokemonName));
 
-        year = undefined ? "" : `&y=${year}`;
+        console.log(pokemonData);
 
-        const response = await searchMovie(title, year, client);
-
-        if(response.Response === ("False")) {
-
-            return interaction.editReply({ content: "**Une erreur est survenue, ou aucun résultat n'a pu être trouvé.**" });
-
-        } else {
-
-            const embed = new EmbedBuilder()
-                .setColor("Yellow")
-                .setTitle(`${response.totalResults} résultat(s) trouvé(s)`)
-                .setTimestamp()
-                .setFooter({
-                    text: `Demandé par ${interaction.user.username}`,
-                    iconURL: interaction.user.displayAvatarURL({ dynamic: true })
-                });
-
-            response.Search.forEach(movie => {
-
-                embed.addFields({
-                    name: `${movie.Title} (${movie.Year})`,
-                    value: `> Identifiant : ${movie.imdbID}`
-                });
-                
+        if(!pokemonData) {
+            void interaction.editReply({ 
+                content: `**Ce pokemon n'existe pas, ou une erreur est survenue.**`
             });
-
-            return interaction.editReply({ embeds: [embed] });
-
         }
+
+        // todo
 
     },
 };
