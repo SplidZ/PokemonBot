@@ -48,7 +48,8 @@ module.exports = async (client) => {
     }
 
     for (const file of eventFiles) {
-        require(file);
+        const event = require(file);
+        event(client);
     }
 
     client.once('ready', async () => {
