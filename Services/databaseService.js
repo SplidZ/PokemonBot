@@ -1,5 +1,6 @@
-const { QuickDB } = require("quick.db");
-const db = new QuickDB({ filePath: `Databases/Bot.sqlite`, table: "bot" });
+import { QuickDB } from 'quick.db';
+
+const db = new QuickDB({ filePath: 'Databases/Bot.sqlite', table: 'bot' });
 
 class DatabaseService {
 
@@ -9,9 +10,7 @@ class DatabaseService {
      * @param {any} value - Value to set.
      */
     async setData(path, value) {
-
         return await db.set(path.toString(), value);
-
     }
 
     /**
@@ -19,10 +18,7 @@ class DatabaseService {
      * @param {string} path - Data path.
      */
     async getData(path) {
-
-
         return await db.get(path.toString());
-        
     }
 
     /**
@@ -30,9 +26,7 @@ class DatabaseService {
      * @param {string} path - Data path.
      */
     async deleteData(path) {
-
         await db.delete(path.toString());
-        
     }
 
     /**
@@ -41,9 +35,7 @@ class DatabaseService {
      * @param {any} value - Value to push.
      */
     async pushData(path, value) {
-
         return await db.push(path.toString(), value);
-        
     }
     
     /**
@@ -52,33 +44,26 @@ class DatabaseService {
      * @param {any} value - Value to pull.
      */
     async pullData(path, value) {
-
         return await db.pull(path.toString(), value);
-        
     }
 
     /**
-     * add data in the dataBase.
+     * Add data in the dataBase.
      * @param {string} path - Data path.
      * @param {any} value - Value to add.
      */
     async addData(path, value) {
-    
         return await db.add(path.toString(), value);
-        
     }
 
     /**
-     * sub data in the dataBase.
+     * Subtract data in the dataBase.
      * @param {string} path - Data path.
-     * @param {any} value - Value to sub.
+     * @param {any} value - Value to subtract.
      */
     async subData(path, value) {
-
         return await db.sub(path.toString(), value);
-        
     }
-
 }
 
-module.exports = DatabaseService;
+export default DatabaseService;

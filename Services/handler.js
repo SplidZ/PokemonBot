@@ -1,51 +1,51 @@
-const fs = require('fs');
-const { join } = require('path');
+import { readdirSync, statSync } from 'fs';
+import { join, resolve } from 'path';
+import { fileURLToPath } from 'url';
 
-module.exports = async (client) => {
+const toFileURL = (path) => new URL(`file://${resolve(path)}`);
 
-    const getFiles = (directory) => 
-        fs.readdirSync(directory).flatMap(file => {
-            const filePath = join(directory, file);
+const getFiles = (directory) => 
+    readdirSync(directory).flatMap(file => {
+        const filePath = join(directory, file);
+        return statSync(filePath).isDirectory() ? getFiles(filePath) : filePath;
+    });
 
-            return fs.statSync(filePath).isDirectory() ? getFiles(filePath) : filePath;
+export default async (client) => {
+    const commandsDir = toFileURL(join(process.cwd(), 'Commands')).href;
+    const componentsDir = toFileURL(join(process.cwd(), 'Components')).href;
+    const eventsDir = toFileURL(join(process.cwd(), 'Events')).href;
 
-        });
-
-    const slashCommandsFiles = getFiles(join(process.cwd(), 'Commands'));
-    const componentsFiles = getFiles(join(process.cwd(), 'Components'));
-    const eventFiles = getFiles(join(process.cwd(), 'Events'));
+    const slashCommandsFiles = getFiles(fileURLToPath(commandsDir));
+    const componentsFiles = getFiles(fileURLToPath(componentsDir));
+    const eventFiles = getFiles(fileURLToPath(eventsDir));
 
     const slashCommands = [];
 
-   for (const file of slashCommandsFiles) {
+    for (const file of slashCommandsFiles) {
+        const command = await import(toFileURL(file).href);
 
-        const command = require(file);
-
-        if (!command?.name) {
+        if (!command?.default?.name) {
             continue;
         }
-        
+
         const directory = file.split('/').slice(-2, -1)[0];
-        const properties = { directory, ...command };
+        const properties = { directory, ...command.default };
 
-        client.slashCommands.set(command.name, properties);
-
+        client.slashCommands.set(command.default.name, properties);
         slashCommands.push(properties);
-
     }
 
     for (const file of componentsFiles) {
+        const component = await import(toFileURL(file).href);
 
-        const component = require(file);
-
-        if (component?.customId) {
-            client.components.set(component.customId, component);
+        if (component?.default?.customId) {
+            client.components.set(component.default.customId, component.default);
         }
     }
 
     for (const file of eventFiles) {
-        const event = require(file);
-        event(client);
+        const event = await import(toFileURL(file).href);
+        event.default(client);
     }
 
     client.once('ready', async () => {
@@ -55,5 +55,4 @@ module.exports = async (client) => {
             console.error(`[ERREUR] Impossibilité de déploiement des commandes: ${error.message}`);
         }
     });
-
 };

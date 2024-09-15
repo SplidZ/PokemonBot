@@ -1,6 +1,6 @@
-const { ApplicationCommandType, ApplicationCommandOptionType } = require("discord.js");
+import { ApplicationCommandType, ApplicationCommandOptionType } from "discord.js";
 
-module.exports = {
+export default {
     name: "pokedex",
     description: "Obtenez des informations sur un pokemon",
     dm_permission: false,
@@ -15,21 +15,18 @@ module.exports = {
     ],
 
     run: async (client, interaction) => {
+        await interaction.deferReply();
 
-        await interaction.deferReply()
+        const pokemonName = interaction.options.getString("pokemon");
+        const pokemonData = await client.functions.getPokemonFromPokedex(pokemonName);
 
-        const pokemonName = await interaction.options.getString("pokemon");
-        const pokemonData = await client.functions.getPokemonFromPokedex(String(pokemonName));
-
-        console.log(pokemonData);
-
-        if(!pokemonData) {
-            void interaction.editReply({ 
+        if (!pokemonData) {
+            return void interaction.editReply({ 
                 content: `**Ce pokemon n'existe pas, ou une erreur est survenue.**`
             });
         }
 
-        // todo
-
+        // Ajouter le reste de la logique pour traiter les données du Pokémon
+        console.log(pokemonData);
     },
 };
