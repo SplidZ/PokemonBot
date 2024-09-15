@@ -29,9 +29,9 @@ export default (client) => {
             command.run(client, interaction);
 
         } else if (interaction.isMessageComponent()) {
-            const interactionUser = await client.database.getData(`temp.${interaction.message.id}.user`);
+            const context = await client.database.getData(`temp.${interaction.message.id}`);
 
-            if (interactionUser && interaction.user.id === interactionUser) {
+            if (context.owner && interaction.user.id === context.owner) {
                 const component = client.components.get(interaction.customId);
 
                 if (!component) {
@@ -42,7 +42,7 @@ export default (client) => {
                 }
 
                 interaction.member = interaction.guild.members.cache.get(interaction.user.id) ?? interaction.user;
-                component.run(client, interaction);
+                component.run(client, interaction, context);
 
             } else {
                 return interaction.reply({ content: "**Vous ne pouvez pas utiliser ce component.**", ephemeral: true }).catch(() => {
