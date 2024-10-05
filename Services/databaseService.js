@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const db = new Keyv({ store: new KeyvMysql(process.env.DATABASE_CREDENTIALS), keySize: 4294967295 });
+const db = new Keyv({ store: new KeyvMysql(process.env.DATABASE_CREDENTIALS) });
 
 class DatabaseService {
 
