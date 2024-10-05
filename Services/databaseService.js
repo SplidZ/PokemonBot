@@ -1,6 +1,10 @@
-import { QuickDB } from 'quick.db';
+import Keyv from 'keyv';
+import KeyvMysql from '@keyv/mysql';
+import dotenv from "dotenv";
 
-const db = new QuickDB({ filePath: 'Databases/Bot.sqlite', table: 'bot' });
+dotenv.config();
+
+const db = new Keyv({ store: new KeyvMysql(process.env.DATABASE_CREDENTIALS), keySize: 4294967295 });
 
 class DatabaseService {
 

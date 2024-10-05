@@ -7,10 +7,11 @@
         "start": "node index.js"
     },
     "dependencies": {
-        "better-sqlite3": "^11.2.1",
+        "@keyv/mysql": "^2.0.2",
         "discord.js": "^14.15.3",
         "dotenv": "^16.4.5",
-        "node-fetch": "2.0",
-        "quick.db": "^9.1.7"
+        "keyv": "^5.0.3",
+        "node-fetch": "2.0"
     }
 }
+
